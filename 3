@@ -1,0 +1,53 @@
+training_data=[1 7.6;2 15.8;3 29;4 45;5 66.5;6 91;10 225];%样本
+maxIndex=2;  %θ最大下标
+alpha=0.001;  %学习率
+threshold=0.0001;  %误差中止变量
+maxTime=5000;  %最大迭代次数
+ 
+dataSize=length(training_data);
+plot(training_data(:,1),training_data(:,2),'r*');
+hold on;
+ 
+ 
+%初始化
+paraLen=maxIndex+1; %θ的个数
+theta=zeros(paraLen,1);  %初始化θ都为0
+theta0=theta;
+times=0;  %初始化迭代次数
+cost0=0;  %初始化第一次损失函数值
+cost1=1;  %初始化第二次损失函数值
+ 
+while abs(cost1-cost0)>threshold && times<maxTime
+  theta0=theta;
+  times=times+1;
+  cost0=costFunction(theta',maxIndex,training_data);
+  tmp=zeros(paraLen,1);
+  
+  for j=1:dataSize  %1-7
+      
+      X=zeros(paraLen,1);
+      for k=0:maxIndex
+          X(k+1)=training_data(j,1)^k;
+      end
+      for i=1:paraLen
+          tmp(i)=tmp(i)+(theta0'*X-training_data(j,2))*X(i);
+      end
+  end
+  
+ 
+  for i=1:paraLen
+      tmp(i)=tmp(i)/dataSize;
+      theta(i)=theta0(i)-alpha*tmp(i);
+  end
+  
+  
+  cost1=costFunction(theta',maxIndex,training_data);
+end
+ 
+
+X=0:0.01:10;
+Y=X;
+for i=1:length(X)
+    Y(i)=theta'*[1;X(i);X(i)^2];
+end
+plot(X,Y,'b')
